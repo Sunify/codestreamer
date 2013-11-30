@@ -1,13 +1,28 @@
 <head>
-  <title>codestreamer</title>
+  	<title>CodeStreamer — Stream you code process</title>
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 
 <body>
-  {{> hello}}
+	{{> header}}
+  	
+  	<section class="container page">
+		{{> hello}}
+	</section>
 </body>
 
 <template name="hello">
-  <h1>Hello World!</h1>
-  {{greeting}}
-  <input type="button" value="Click" />
+  	<h1>Hello World!</h1>
+  	{{greeting}}<br />
+  	<input type="button" value="Click" class="btn btn-primary" />
+</template>
+
+<template name="header">
+	<header class="navbar navbar-default navbar-fixed-top navbar-inverse">
+		<div class="navbar-inner">
+			<div class="container">
+				<span class="brand">CodeStreamer</span>
+			</div>
+		</div>
+	</header>
 </template>
