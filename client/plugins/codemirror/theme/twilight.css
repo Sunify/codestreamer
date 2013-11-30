@@ -1,4 +1,4 @@
-.cm-s-twilight.CodeMirror { background: #141414; color: #f7f7f7; } /**/
+.cm-s-twilight.CodeMirror { background: #141414; color: #DCDCDC; } /**/
 .cm-s-twilight .CodeMirror-selected { background: #323232 !important; } /**/
 
 .cm-s-twilight .CodeMirror-gutters { background: #141414; border-right: 1px solid #141414; }
@@ -15,7 +15,7 @@
 .cm-s-twilight .cm-comment { color:#777; font-style:italic; font-weight:normal; } /**/
 .cm-s-twilight .cm-string { color:#8f9d6a; font-style:italic; } /**/
 .cm-s-twilight .cm-string-2 { color:#bd6b18 } /*?*/
-.cm-s-twilight .cm-meta { background-color:#141414; color:#f7f7f7; } /*?*/
+.cm-s-twilight .cm-meta { background-color:#141414; color:#DCDCDC; } /*?*/
 .cm-s-twilight .cm-builtin { color: #cda869; } /*?*/
 .cm-s-twilight .cm-tag { color: #997643; } /**/
 .cm-s-twilight .cm-attribute { color: #d6bb6d; } /*?*/
