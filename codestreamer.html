@@ -6,8 +6,8 @@
 <body>
 	{{> header}}
   	
-  	<section class="container page">
-
+  	<section class="page">
+		{{> editor}}
 	</section>
 </body>
 
@@ -15,9 +15,13 @@
 <template name="header">
 	<header class="navbar navbar-default navbar-fixed-top navbar-inverse">
 		<div class="navbar-inner">
-			<div class="container">
+			<div class="navbar-container">
 				<a href="." class="brand">CodeStreamer</a>
 			</div>
 		</div>
 	</header>
+</template>
+
+<template name="editor">
+	<textarea class="editor"></textarea>
 </template>
