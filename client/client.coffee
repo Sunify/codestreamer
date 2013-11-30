@@ -1,7 +1,7 @@
 
 
 $(document).ready () ->
-	CodeMirror.fromTextArea(
+	@cm = CodeMirror.fromTextArea(
 		document.getElementById('editor'),
 		mode: 'javascript'
 		theme: 'twilight'
