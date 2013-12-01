@@ -3,7 +3,7 @@ AppRouter = Backbone.Router.extend
 		'': 'main',
 		':id': 'open'
 
-	main: () =>
+	main: () ->
 		Session.set 'currStream', null
 		console.log 'main action'
 
@@ -25,16 +25,18 @@ $(document).ready () =>
 	)
 
 	@cm.on 'change', (evt) =>
+		# Save doc and cursor position on edit
 		id = Session.get 'currStream'
-		console.log @cm.doc.getCursor()
+		cur = @cm.doc.getCursor()
 		if !id
-			cur = @cm.doc.getCursor()
 			newId = @Streams.insert code: @cm.getValue(), line: cur.line, ch: cur.ch
 			@router.setStream newId
 		else
-			@Streams.update id, code: @cm.getValue()
+			@Streams.update id, code: @cm.getValue(), line: cur.line, ch: cur.ch
 
 Template.editor.code = () ->
+	# Обновление содержимого редактора. 
+	# Не обновляет, если клиентский редактор — источник содержимого (он как бы уже обновлен)
 	stream = @Streams.findOne _id: Session.get 'currStream'
 	if stream && stream.code != @cm.getValue()
 		@cm.setValue stream.code
