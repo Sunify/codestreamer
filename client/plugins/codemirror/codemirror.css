@@ -1,8 +1,8 @@
 /* BASICS */
-
+@import url(http://fonts.googleapis.com/css?family=PT+Mono&subset=latin,cyrillic);
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
-  font-family: monospace;
+  font-family: 'PT Mono', monospace;
   height: 100%;
 }
 .CodeMirror-scroll {
