@@ -70,5 +70,6 @@ Template.menu.events
 
 Meteor.startup () =>
 	Session.setDefault 'theme', 'dark'
+	Meteor.call 'setTheme', 'dark'
 	@router = new AppRouter()
 	Backbone.history.start pushState: true
