@@ -15,10 +15,10 @@ AppRouter = Backbone.Router.extend
 		this.navigate id, trigger: true
 
 $(document).ready () =>
+	
 	@cm = CodeMirror.fromTextArea(
 		document.getElementById('editor'),
 		mode: 'javascript'
-		theme: 'twilight'
 		indentUnit: 2
 		indentWithTabs: true
 		lineNumbers: true
@@ -42,7 +42,34 @@ Template.editor.code = () ->
 		@cm.setValue stream.code
 		@cm.doc.setCursor line: stream.line, ch: stream.ch
 
+Template.editor.theme = () ->
+	if @cm
+		theme = 'twilight'
+		theme = 'default' if Session.get('theme') == 'light'
+		@cm.setOption 'theme', theme
+
+
+dark = () ->
+	return true if Session.get('theme') == 'dark'
+	return false
+
+Template.header.dark = dark
+
+Template.menu.dark = dark
+
+Template.menu.events
+	'click .theme-switcher': (evt) =>
+		evt.preventDefault()
+		switcher = $ evt.currentTarget
+		if switcher.hasClass 'st-light'
+			theme = 'light'
+		else
+			theme = 'dark'
+		Session.set 'theme', theme
+
 
 Meteor.startup () =>
+	Session.setDefault 'theme', 'dark'
+	Meteor.call 'setTheme', 'dark'
 	@router = new AppRouter()
 	Backbone.history.start pushState: true
