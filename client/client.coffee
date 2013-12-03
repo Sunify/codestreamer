@@ -15,7 +15,6 @@ AppRouter = Backbone.Router.extend
 		this.navigate id, trigger: true
 
 $(document).ready () =>
-	
 	@cm = CodeMirror.fromTextArea(
 		document.getElementById('editor'),
 		mode: 'javascript'
@@ -25,22 +24,28 @@ $(document).ready () =>
 	)
 
 	@cm.on 'change', (evt) =>
-		# Save doc and cursor position on edit
 		id = Session.get 'currStream'
 		cur = @cm.doc.getCursor()
 		if !id
-			newId = @Streams.insert code: @cm.getValue(), line: cur.line, ch: cur.ch
+			newId = @Streams.insert code: @cm.getValue(), line: cur.line, ch: cur.ch, patches: []
+			stream = @Streams.findOne _id: newId
 			@router.setStream newId
 		else
-			@Streams.update id, code: @cm.getValue(), line: cur.line, ch: cur.ch
+			stream = @Streams.findOne _id: id
+			if stream
+				res = ''
+				res = stream.code if stream.code != undefined
+				diff = @dmp.diff_main res, @cm.getValue()
+				patch = @dmp.patch_make res, @cm.getValue(), diff
+				Meteor.call('addPatch', id, patch)
 
 Template.editor.code = () ->
-	# Обновление содержимого редактора. 
-	# Не обновляет, если клиентский редактор — источник содержимого (он как бы уже обновлен)
 	stream = @Streams.findOne _id: Session.get 'currStream'
-	if stream && stream.code != @cm.getValue()
+	if stream && stream.code
+		pos = @cm.doc.getCursor()
+		newpos = pos
 		@cm.setValue stream.code
-		@cm.doc.setCursor line: stream.line, ch: stream.ch
+		@cm.doc.setCursor newpos
 
 Template.editor.theme = () ->
 	if @cm
@@ -72,4 +77,5 @@ Meteor.startup () =>
 	Session.setDefault 'theme', 'dark'
 	Meteor.call 'setTheme', 'dark'
 	@router = new AppRouter()
+	@dmp = new diff_match_patch()
 	Backbone.history.start pushState: true
