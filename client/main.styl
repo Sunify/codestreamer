@@ -1,0 +1,67 @@
+@import 'nib'
+
+body, html
+	width 100%
+	height 100%
+	padding 0
+
+body
+	&.st-light
+		background #fff
+
+		.theme-switcher__icon
+			background #141414
+
+	&.st-dark
+		background #141414
+
+		.theme-switcher__icon
+			background #DCDCDC
+
+.navbar
+	position relative
+	z-index 1
+
+	margin 0
+
+.navbar-container
+	padding 0 20px
+
+.page
+	position relative
+
+	box-sizing border-box
+	width 100%
+	height 100%
+	margin-top -44px
+	padding-top 49px
+
+.editor
+	width 100%
+	height 100%
+	margin 0
+	padding 20px
+
+	box-sizing border-box
+	resize none
+
+	color #DCDCDC
+	background #141414
+	border none
+	border-radius 0
+	box-shadow none !important
+
+
+.theme-switcher
+
+	&__icon
+		size = 20px
+
+		display inline-block
+
+		width size
+		height size
+
+		vertical-align middle
+
+		border-radius 50%
