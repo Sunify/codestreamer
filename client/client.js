@@ -1,4 +1,5 @@
 var currUTCTime, router, cm;
+var app = {};
 
 AppRouter = Backbone.Router.extend({
 	routes: {
@@ -8,7 +9,10 @@ AppRouter = Backbone.Router.extend({
 
 	main: function() {
 		Session.set('currStream', null);
-		console.log('main action');
+		var id = Streams.insert({
+			Deltas: []
+		});
+		this.setStream(id);
 	},
 
 	open: function(id) {
@@ -25,99 +29,72 @@ AppRouter = Backbone.Router.extend({
 	}
 });
 
-currUTCTime = function() {
-	var d = new Date();
-	return d.getTime() - d.getTimezoneOffset() * 60;
-}
+Template.editor.stream = function() {
+  	var streamId = Session.get("currStream");
+  	return Streams.findOne({_id: streamId});
+};
 
-$(document).ready(function() {
+Template.editor.rendered = function() {
+	app.editor = {};
+	app.editor.ace = ace.edit('editor');
+	app.editor.ace.setTheme('ace/theme/twilight');
+	app.editor.ace.getSession().setMode("ace/mode/javascript");
+	app.editor.local_uid = (((1+Math.random())*0x10000)|0).toString(16).slice(1);
+	app.editor.updating = false;
+	app.editor.currentDelta = 0;
 
-	// cm = CodeMirror.fromTextArea(
-	// 	document.getElementById('editor'),
-	// 	{
-	// 		mode: 'javascript',
-	// 		content: '',
-	// 		indentUnit: 2,
-	// 		indentWithTabs: true,
-	// 		lineNumbers: true
-	// 	}
-	// );
+	app.editor.update = function(deltas) {
+		if(deltas === undefined){ return false; }
 
-	// cm.on('change', function(cm, changeObj) {
-	// 	var cur, id;
-	// 	if (changeObj.origin != "setValue") {
-	// 		cur = cm.doc.getCursor();
-	// 		id = Session.get('currStream');
-	// 		if (!id) {
-	// 			Meteor.call(
-	// 				'addStream',
-	// 				cm.getValue(),
-	// 				currUTCTime(),
-	// 				function(err, res) {
-	// 					console.log(err);
-	// 					router.setStream(res);
-	// 				}
-	// 			);
-	// 		} else {
-	// 			Versions.insert({
-	// 				stream_id: id,
-	// 				code: cm.getValue(),
-	// 				time: currUTCTime()	
-	// 			});
-	// 			Meteor.call('updateStreamCode', id);
-	// 		}
-	// 	}
-	// });
+	    var deltaLength = deltas.length;
+	    var pendDeltas = [];
 
-});
+	    for(var i = app.editor.currentDelta; i < deltaLength; ++i) {
+	      	if(deltas[i].sender_uid !== app.editor.local_uid) {
+	        	pendDeltas.push(deltas[i].delta);
+	      	}
+	    }
 
+	    if(pendDeltas.length > 0) {
+	      	app.editor.updating = true;
+	      	app.editor.ace.getSession().getDocument().applyDeltas(pendDeltas);
+	    }
 
-Template.editor.code = function() {
-	var stream, pos, newpos;
-
-	stream = Streams.findOne({_id: Session.get('currStream')});
-	if(stream && stream.cache) {
-		// pos = cm.doc.getCursor();
-		// cm.setValue(stream.cache);
-		// cm.doc.setCursor(pos);
+	    app.editor.currentDelta = deltaLength;
+	    app.editor.updating = false;
 	}
-}
 
-Template.editor.theme = function() {
-	var theme;
+	var stream;
+	setTimeout( function(){
+		stream = new Template.editor.stream();
+		app.editor.update(stream.Deltas);
+	}, 200);
 
-	// if(cm) {
-	// 	theme = (Session.get('theme') === 'dark')?'twilight':'default';
-	// 	cm.setOption('theme', theme);
-	// }
-}
-
-Template.header.dark = function() {
-	return (Session.get('theme') == 'dark')?true:false;
-}
-
-Template.menu.dark = Template.header.dark;
-
-Template.menu.events({
-	'click .theme-switcher': function(evt) {
-		var switcher;
-
-		evt.preventDefault();
-		switcher = $(evt.currentTarget);
-		
-		if (switcher.hasClass('st-light')) {
-			theme = 'light';
-		} else {
-			theme = 'dark';
+	app.editor.ace.getSession().getDocument().on('change', function(evt) {
+		if(!app.editor.updating) {
+			Streams.update(
+				Session.get('currStream'),
+				{
+					$push: {
+						Deltas: {delta: evt.data, sender_uid: app.editor.local_uid}
+					}
+				}
+			);
 		}
+	});
 
-		Session.set('theme', theme);
-	}
-});
+	setTimeout(function() {
+		var q = Streams.find({_id: Session.get('currStream')});
+		q.observe({
+			changed: function(newDoc, oldIndex, oldDoc) {
+				app.editor.update(newDoc.Deltas);
+			}
+		});
+	}, 200);
+}
 
 Meteor.startup(function() {
 	Session.setDefault('theme', 'dark');
 	router = new AppRouter();
 	Backbone.history.start({pushState: true})
-
 });
