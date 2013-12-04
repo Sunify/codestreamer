@@ -9,42 +9,51 @@ AppRouter = Backbone.Router.extend
 
 	open: (id) ->
 		Session.set 'currStream', id
-		Streams.findOne _id: id
 
 	setStream: (id) ->
 		this.navigate id, trigger: true
 
+currUTCTime = () ->
+	d = new Date()
+	d.getTime() - d.getTimezoneOffset() * 60
+
 $(document).ready () =>
+	
 	@cm = CodeMirror.fromTextArea(
 		document.getElementById('editor'),
 		mode: 'javascript'
+		content: 'd'
 		indentUnit: 2
 		indentWithTabs: true
 		lineNumbers: true
 	)
 
-	@cm.on 'change', (evt) =>
-		id = Session.get 'currStream'
-		cur = @cm.doc.getCursor()
-		if !id
-			newId = @Streams.insert code: @cm.getValue(), line: cur.line, ch: cur.ch, patches: []
-			stream = @Streams.findOne _id: newId
-			@router.setStream newId
-		else
-			stream = @Streams.findOne _id: id
-			if stream
-				res = ''
-				res = stream.code if stream.code != undefined
-				diff = @dmp.diff_main res, @cm.getValue()
-				patch = @dmp.patch_make res, @cm.getValue(), diff
-				Meteor.call('addPatch', id, patch)
+	@cm.on 'beforeChange', (cm, changeObj) ->
+		# opts.cancel() 
+	@cm.on 'change', (cm, changeObj) ->
+		if changeObj.origin != "setValue"
+			cur = @cm.doc.getCursor()
+			id = Session.get 'currStream'
+			if !id
+				Meteor.call 'addStream', @cm.getValue(), currUTCTime(), (err, res) =>
+					console.log err, res
+					@router.setStream res
+			else
+				@Versions.insert
+					stream_id: id
+					code: @cm.getValue()
+					time: currUTCTime()
+				Meteor.call 'updateStreamCode', id
 
 Template.editor.code = () ->
 	stream = @Streams.findOne _id: Session.get 'currStream'
-	if stream && stream.code
+	if stream && stream.cache
+		dmp = new diff_match_patch()
 		pos = @cm.doc.getCursor()
 		newpos = pos
-		@cm.setValue stream.code
+
+		@cm.setValue stream.cache
+
 		@cm.doc.setCursor newpos
 
 Template.editor.theme = () ->

@@ -5375,6 +5375,7 @@ window.CodeMirror = (function() {
   }
 
   function signal(emitter, type /*, values...*/) {
+
     var arr = emitter._handlers && emitter._handlers[type];
     if (!arr) return;
     var args = Array.prototype.slice.call(arguments, 2);
