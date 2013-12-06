@@ -1,15 +1,22 @@
 <template name="menu">
 	<ul class="nav navbar-nav">
-		<li><a href="#" class="theme-switcher {{#if dark}}st-light{{else}}st-dark{{/if}}">
-			<i class="theme-switcher__icon"></i>
-		</a></li>
-		<!--<li>
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown">Lang</a>
+		<li class="theme-switcher">
+			<a href="javascript:void(0)">
+				<i class="theme-switcher__icon"></i>
+			</a>
+		</li>
+
+		<li class="dropdown">
+			<a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">{{currLangTitle}}</a>
 			<ul class="dropdown-menu">
-				<li class="active"><a href="javascript:void(0)">JavaScript</a></li>
-				<li><a href="javascript:void(0)">CoffeeScript</a></li>
-				<li><a href="javascript:void(0)">HTML</a></li>
+				{{#eachProp langs}}
+						<li class="{{activeClass property currLang}}">
+							<a href="javascript:void(0)" data-mode="{{property}}">
+								{{value}}
+							</a>
+						</li>
+				{{/eachProp}}
 			</ul>
-		</li>-->
+		</li>
 	</ul>
 </template>
