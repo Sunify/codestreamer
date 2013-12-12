@@ -47,7 +47,7 @@ Template.editor.rendered = function() {
 	app.editor = {};
 
 	app.editor.ace = ace.edit('editor');
-	app.editor.ace.getSession().setMode("ace/mode/javascript");
+	app.editor.ace.getSession().setMode("ace/mode/html");
 	app.editor.ace.renderer.setPadding(10);
 
 	Template.editor.theme();
@@ -79,6 +79,8 @@ Template.editor.rendered = function() {
 	    app.editor.currentDelta = deltaLength;
 	    app.editor.updating = false;
 	    app.editor.first_upd = false;
+
+	    Session.set('code', app.editor.ace.getSession().getValue());
 	}
 
 	app.editor.setLang = function(lang) {

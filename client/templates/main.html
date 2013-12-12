@@ -4,9 +4,26 @@
 </head>
 
 <body>
+	{{> page}}
+</body>
+
+<template name="page">
 	{{> header}}
   	
   	<section class="page">
-		{{> editor}}
+		{{#if showPreview}}
+			<div class="editor-wrap">
+				{{> editor}}
+			</div>
+			<div class="preview-wrap">
+				{{> preview}}
+			</div>
+		{{else}}
+			{{> editor}}
+		{{/if}}
 	</section>
-</body>
+</template>
+
+<template name="preview">
+	<iframe width="100%" height="100%" frameborder="no" id="iframe" src="data:text/html;charset=utf-8,{{codePreview}}" />
+</template>
