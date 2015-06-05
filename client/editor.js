@@ -1,6 +1,6 @@
 Template.editor.stream = function() {
-  	var streamId = Session.get("currStream");
-  	return Streams.findOne({_id: streamId});
+	var streamId = Session.get("currStream");
+	return Streams.findOne({_id: streamId});
 };
 
 Template.editor.theme = function() {
@@ -15,10 +15,9 @@ Template.editor.theme = function() {
 			.removeClass('st-light')
 			.removeClass('st-dark')
 			.addClass(st_class);
-	}
+	};
 
 	switch(theme) {
-
 		case 'light':
 			ace_theme = 'ace/theme/tomorrow';
 			navbar_class = 'navbar-default';
@@ -39,7 +38,7 @@ Template.editor.theme = function() {
 		.addClass(navbar_class);
 
 	return '';
-}
+};
 
 Template.editor.rendered = function() {
 	Session.setDefault('theme', 'dark');
@@ -62,31 +61,31 @@ Template.editor.rendered = function() {
 	app.editor.update = function(deltas) {
 		if(deltas === undefined){ return false; }
 
-	    var deltaLength = deltas.length;
-	    var pendDeltas = [];
+		var deltaLength = deltas.length;
+		var pendDeltas = [];
 
-	    for(var i = app.editor.currentDelta; i < deltaLength; ++i) {
-	      	if(app.editor.first_upd || deltas[i].sender_uid !== app.editor.local_uid) {
-	        	pendDeltas.push(deltas[i].delta);
-	      	}
-	    }
+		for(var i = app.editor.currentDelta; i < deltaLength; ++i) {
+			if(app.editor.first_upd || deltas[i].sender_uid !== app.editor.local_uid) {
+				pendDeltas.push(deltas[i].delta);
+			}
+		}
 
-	    if(pendDeltas.length > 0) {
-	      	app.editor.updating = true;
-	      	app.editor.ace.getSession().getDocument().applyDeltas(pendDeltas);
-	    }
+		if(pendDeltas.length > 0) {
+			app.editor.updating = true;
+			app.editor.ace.getSession().getDocument().applyDeltas(pendDeltas);
+		}
 
-	    app.editor.currentDelta = deltaLength;
-	    app.editor.updating = false;
-	    app.editor.first_upd = false;
+		app.editor.currentDelta = deltaLength;
+		app.editor.updating = false;
+		app.editor.first_upd = false;
 
-	    Session.set('code', app.editor.ace.getSession().getValue());
-	}
+		Session.set('code', app.editor.ace.getSession().getValue());
+	};
 
 	app.editor.setLang = function(lang) {
 		app.editor.ace.getSession().setMode('ace/mode/' + lang);
 		Session.set('lang', lang);
-	}
+	};
 
 	var stream;
 	var loadTimer = setInterval( function(){
@@ -120,5 +119,5 @@ Template.editor.rendered = function() {
 			}
 		});
 	}, 200);
-}
+};
 

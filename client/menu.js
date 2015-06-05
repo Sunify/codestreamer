@@ -19,11 +19,11 @@ Template.menu.events({
 
 Template.menu.currLang = function() {
 	return Session.get('lang');
-}
+};
 
 Template.menu.currLangTitle = function() {
 	return Template.menu.langs()[Template.menu.currLang()];
-}
+};
 
 Template.menu.langs = function() {
 	return {
@@ -37,7 +37,7 @@ Template.menu.langs = function() {
 		'php': 'PHP',
 		'ruby': 'Ruby'
 	};
-}
+};
 
 Handlebars.registerHelper('activeClass', function(v1, v2) {
 	return v1 === v2?'active':'';
